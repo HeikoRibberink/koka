@@ -638,7 +638,9 @@ fun interleave-strands(xs : list<(scope) -> <async|e> a> ) : <async,strands<a>|e
         strand-done(i, Complete(Cancel))
       else
         with yield-on-await
-        val res = strand-exec(inject-strand-effect { action(sentinel-scope) })
+        val res = 
+          with mask<strands>
+          strand-exec({ action(sentinel-scope) })
         strand-done(i, res)
         if res.is-finalize then
           async-st { keep-spawning := False }
